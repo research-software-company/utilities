@@ -21,6 +21,14 @@ function git_has_added()
     fi
 }
 
+function git_unpushed()
+{
+    if [[ $(git log @{u}.. 2> /dev/null) != "" ]]
+    then
+        echo unpushed
+    fi
+}
+
 function git_prompt()
 {
     local color
@@ -30,7 +38,8 @@ function git_prompt()
     	if [[ $(git_has_changed) ]] || [[ $(git_has_added) ]]
         then
             color="%F{red}"
-        else
+        elif [[ $(git_unpushed) ]]
+        then
             color="%F{white}"
         fi
         echo " $color($branch)%f"
