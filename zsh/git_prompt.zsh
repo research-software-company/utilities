@@ -40,6 +40,8 @@ function git_prompt()
             color="%F{red}"
         elif [[ $(git_unpushed) ]]
         then
+	    color="%F{yellow}"
+	else
             color="%F{white}"
         fi
         echo " $color($branch)%f"
