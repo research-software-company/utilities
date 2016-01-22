@@ -4,11 +4,18 @@ Import-Module -Force -DisableNameChecking "d:\chelem\internal\utilities\windows\
 
 function prompt
 {
+    Write-Host " " -NoNewline
     Write-VirtenvPrompt
     Write-Host $pwd -NoNewline
     write-GitPrompt
     Write-Host ">" -NoNewline
     " "
 }
-
 Set-Alias -name Activate-Virtenv -Value Enable-Virtenv
+
+# Use PSReadLine
+Import-Module PSReadline
+Set-PSReadLineOption -HistorySearchCursorMovesToEnd
+Set-PSReadlineKeyHandler -Key UpArrow -Function HistorySearchBackward
+Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
+
