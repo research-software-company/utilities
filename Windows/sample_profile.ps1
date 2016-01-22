@@ -4,7 +4,7 @@ Import-Module -Force -DisableNameChecking "d:\chelem\internal\utilities\windows\
 
 function prompt
 {
-    Write-Host " " -NoNewline
+    Write-Host "PS " -NoNewline
     Write-VirtenvPrompt
     Write-Host $pwd -NoNewline
     write-GitPrompt
