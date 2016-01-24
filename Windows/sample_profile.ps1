@@ -4,7 +4,6 @@ Import-Module "d:\chelem\internal\utilities\windows\VirtualEnvUtils.psm1"
 
 function prompt
 {
-    Write-Host "PS " -NoNewline
     Write-VirtenvPrompt "DarkCyan"
     Write-Host $pwd -NoNewline
     write-GitPrompt
