@@ -1,10 +1,13 @@
 Set-Alias -name npp -value 'C:\Program Files (x86)\Notepad++\notepad++.exe'
 Import-Module "d:\chelem\internal\utilities\windows\git-prompt.psm1"
 Import-Module "d:\chelem\internal\utilities\windows\VirtualEnvUtils.psm1"
+Import-Module "d:\chelem\internal\utilities\windows\ChooseVS.psm1"
 
 function prompt
 {
+    Write-VSPrompt "DarkGreen"
     Write-VirtenvPrompt "DarkCyan"
+
     Write-Host $pwd -NoNewline
     write-GitPrompt
     Write-Host ">" -NoNewline
