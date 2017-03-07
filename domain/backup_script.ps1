@@ -2,23 +2,36 @@ $backupFolder = "U:\Backup\"
 $suffix_to_backup=".ssh","Sources",".Py*"
 #$backuped_dirs = New-Object System.Collections.ArrayList 
 
-if(!(Test-Path -Path $backupFolder )){
+if(!(Test-Path -Path $backupFolder ))
+{
     New-Item -ItemType directory -Path $backupFolder
 }
 
 foreach ($suffix in $suffix_to_backup){
-	if ($suffix.EndsWith("*")){		$dirs = Get-ChildItem "$ENV:USERPROFILE\$suffix*"}
-	Else {		$dirs = "$ENV:USERPROFILE\$suffix"}
+	if ($suffix.EndsWith("*"))
+	{
+		$dirs = Get-ChildItem "$ENV:USERPROFILE\$suffix*"
+	}
+	Else 
+	{		
+		$dirs = "$ENV:USERPROFILE\$suffix"
+	}
 
-	foreach ($dir in $dirs){
+	foreach ($dir in $dirs)
+	{
 		$base_name = $dir|% {$_.BaseName}
-		if  ([string]::IsNullOrEmpty($base_name)) {
-			$base_name=$suffix}
+		if  ([string]::IsNullOrEmpty($base_name)) 
+		{
+			$base_name=$suffix
+		}
 		#echo "$dir ,  $base_name"
-		Robocopy $dir  $backupFolder\$base_name /create /MIR /xo /fft  /mt:7 /w:3 /r:3 /nfl /ndl /nc /ns 
+		Robocopy $dir  $backupFolder\$base_name /MIR /xo /fft  /mt:7 /w:3 /r:3 /nfl /ndl /nc /ns 
 		#[void] $backuped_dirs.Add($base_name)
 	} 	
 }
+
+copy $profile $backupFolder\profile.ps1
+
 # set Sources as link 
 
 #$olddl = get-distributiongroup $ENV:USERPROFILE\Sources
