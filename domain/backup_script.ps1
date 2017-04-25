@@ -2,10 +2,7 @@ $backupFolder = "U:\Backup\"
 $suffix_to_backup=".ssh","Sources",".Py*"
 #$backuped_dirs = New-Object System.Collections.ArrayList
 
-$user_name = Get-ChildItem Env:USERNAME
-$user_name = $user_name.value
-$logFile = "C:\Users\$user_name\backup_log.txt"
-$date = Get-Date
+$logFile = "~\backup_log.txt"
 
 if(!(Test-Path -Path $backupFolder ))
 {
@@ -13,10 +10,10 @@ if(!(Test-Path -Path $backupFolder ))
 }
 if(!(Test-path -Path $logFile))
 {
-	New-Item -Path "C:\Users\$user_name" -ItemType "file" -Name "backup_log.txt"
+	New-Item -Path "~" -ItemType "file" -Name "backup_log.txt"
 }
 "################################################"|Add-Content $logFile
-$date|Add-Content $logFile
+Get-Date | Add-Content $logFile
 "Started backup process..."| Add-Content $logFile
 foreach ($suffix in $suffix_to_backup){
 	
@@ -46,6 +43,8 @@ foreach ($suffix in $suffix_to_backup){
 }
 
 copy $profile $backupFolder\profile.ps1
+
+"Backup finished" | Add-Content $logFile
 
 # set Sources as link 
 
