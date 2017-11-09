@@ -28,7 +28,7 @@ function ChooseVS
     Param(
         [Parameter(Mandatory=$true,
                    HelpMessage="Choose Visual Studio version")]
-        [ValidateSet("2010", "2012", "2013", "2015")]
+        [ValidateSet("2010", "2012", "2013", "2015", "2017")]
         [String]
         $version,
 
@@ -50,7 +50,8 @@ function GetVersionNumber($version)
         "2010"= "10.0";
         "2012"= "11.0";
         "2013"= "12.0";
-        "2015"= "14.0"
+        "2015"= "14.0";
+		"2017"= "15.0";
     }
 
     $versions.Get_Item($version)
@@ -63,6 +64,7 @@ function GetVersion($VersionNumber)
         "11.0" = "2012";
         "12.0" = "2013";
         "14.0" = "2015";
+		"15.0" = "2017";
     }
 
     $VersionNumbers.Get_Item($VersionNumber)
@@ -83,6 +85,11 @@ function GetBatchCommand($version, $platform)
     {
         $cmd = $cmd + " x64"
     }
+	if($version -eq "14.0")
+	{
+		# Fix the problem causing RC.EXE not to be found (https://stackoverflow.com/a/46166632/871910)
+		$cmd = $cmd + " 8.1"
+	}
 
     $cmd
 }
