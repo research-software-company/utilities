@@ -1,6 +1,4 @@
 $backupFolder = "U:\Backup\" 
-$suffix_to_backup=".ssh","Sources",".Py*"
-#$backuped_dirs = New-Object System.Collections.ArrayList
 
 $logFile = "~\backup_log.txt"
 
@@ -15,32 +13,9 @@ if(!(Test-path -Path $logFile))
 "################################################"|Add-Content $logFile
 Get-Date | Add-Content $logFile
 "Started backup process..."| Add-Content $logFile
-foreach ($suffix in $suffix_to_backup){
-	
-	"Copying " + $suffix + " files..."|Add-Content $logFile
-	if ($suffix.EndsWith("*"))
-	{
-		$dirs = Get-ChildItem "$ENV:USERPROFILE\$suffix*"
-	}
-	Else 
-	{		
-		$dirs = "$ENV:USERPROFILE\$suffix"
-	}
 
-	foreach ($dir in $dirs)
-	{
-		$base_name = $dir|% {$_.BaseName}
-		if  ([string]::IsNullOrEmpty($base_name)) 
-		{
-			$base_name=$suffix
-		}
-		"Copied " + $base_name|Add-Content $logFile
-		#echo "$dir ,  $base_name"
-		Robocopy $dir  $backupFolder\$base_name /MIR /xo /fft  /mt:7 /w:3 /r:3 /nfl /ndl /nc /ns 
-		#[void] $backuped_dirs.Add($base_name)
-	}
-	"Finished copying " + $suffix + " files..."|Add-Content $logFile
-}
+Robocopy $ENV:USERPROFILE $backupFolder /MIR /xo /fft  /mt:7 /w:3 /r:3 /nfl /ndl /nc /ns 
+"Finished copying files..."|Add-Content $logFile
 
 copy $profile $backupFolder\profile.ps1
 
