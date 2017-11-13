@@ -40,6 +40,7 @@ function ChooseVS
     )
 
     $batchfile = GetBatchCommand $version $platform
+	Write-Host ($batchfile)
     CallBatch $batchfile
     Write-Host ("Visual Studio " + $version + " " + $platform + " set")
 }
@@ -85,7 +86,7 @@ function GetBatchCommand($version, $platform)
     {
         $cmd = $cmd + " x64"
     }
-	if($version -eq "14.0")
+	if($version -eq "2015")
 	{
 		# Fix the problem causing RC.EXE not to be found (https://stackoverflow.com/a/46166632/871910)
 		$cmd = $cmd + " 8.1"
