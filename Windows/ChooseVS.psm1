@@ -40,7 +40,6 @@ function ChooseVS
     )
 
     $batchfile = GetBatchCommand $version $platform
-	Write-Host ($batchfile)
     CallBatch $batchfile
     Write-Host ("Visual Studio " + $version + " " + $platform + " set")
 }
@@ -71,10 +70,42 @@ function GetVersion($VersionNumber)
     $VersionNumbers.Get_Item($VersionNumber)
 }
 
+function GetVSEditionPath($path)
+{
+    # Looks for a Visual Studio edition directly under $path. Edition can be Community, Professional or Enterprise
+    $edition = [io.path]::Combine($path, "Enterprise")
+    if(!(Test-Path -Path $edition))
+    {
+        $edition = [io.path]::Combine($path, "Professional")
+        if(!(Test-Path -Path $edition))
+        {
+            $edition = [io.path]::Combine($path, "Community")
+        }
+    }
+    $edition
+}
+
+
 function GetVSPath($version)
 {
-    $VersionNum = GetVersionNumber($version)
-    $path = [io.path]::Combine(${env:ProgramFiles(x86)}, ("Microsoft Visual Studio " + $VersionNum), "vc", "vcvarsall.bat")
+    if($version -ge 2017)
+    {
+        # Located here: "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat"
+        # 'Community' may be 'Professional' or 'Enterprise', depending on the edition.
+        $path = [io.path]::Combine(${env:ProgramFiles(x86)}, "Microsoft Visual Studio", $version)
+        $path = GetVSEditionPath($path)  # Adds the edition
+        $path = [io.path]::Combine($path, "VC", "Auxiliary", "Build", "vcvarsall.bat")
+    }
+    else
+    {
+        $VersionNum = GetVersionNumber($version)
+        $path = [io.path]::Combine(${env:ProgramFiles(x86)}, ("Microsoft Visual Studio " + $VersionNum), "vc", "vcvarsall.bat")
+    }
+
+    if(!(Test-Path $path))
+    {
+        Throw "Can't locate Visual Studio " + $version
+    }
     $path
 }
 
