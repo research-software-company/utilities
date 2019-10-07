@@ -67,19 +67,27 @@ function GetVersion($VersionNumber)
 		"15.0" = "2017";
     }
 
-    $VersionNumbers.Get_Item($VersionNumber)
+    $DecodedVersion = $VersionNumbers.Get_Item($VersionNumber)
+    if ($DecodedVersion) 
+    {
+        $DecodedVersion
+    }
+    else
+    {
+        $VersionNumber    
+    }
 }
 
-function GetVSEditionPath($path)
+function GetVSEditionPath($VSpath)
 {
-    # Looks for a Visual Studio edition directly under $path. Edition can be Community, Professional or Enterprise
-    $edition = [io.path]::Combine($path, "Enterprise")
+    # Looks for a Visual Studio edition directly under $VSpath. Edition can be Community, Professional or Enterprise
+    $edition = [io.path]::Combine($VSpath, "Enterprise", "VC")
     if(!(Test-Path -Path $edition))
     {
-        $edition = [io.path]::Combine($path, "Professional")
+        $edition = [io.path]::Combine($VSpath, "Professional", "VC")
         if(!(Test-Path -Path $edition))
         {
-            $edition = [io.path]::Combine($path, "Community")
+            $edition = [io.path]::Combine($VSpath, "Community", "VC")
         }
     }
     $edition
@@ -92,27 +100,27 @@ function GetVSPath($version)
     {
         # Located here: "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat"
         # 'Community' may be 'Professional' or 'Enterprise', depending on the edition.
-        $path = [io.path]::Combine(${env:ProgramFiles(x86)}, "Microsoft Visual Studio", $version)
-        $path = GetVSEditionPath($path)  # Adds the edition
-        $path = [io.path]::Combine($path, "VC", "Auxiliary", "Build", "vcvarsall.bat")
+        $VSpath = [io.path]::Combine(${env:ProgramFiles(x86)}, "Microsoft Visual Studio", $version)
+        $VSpath = GetVSEditionPath($VSpath)  # Adds the edition
+        $VSpath = [io.path]::Combine($VSpath, "Auxiliary", "Build", "vcvarsall.bat")
     }
     else
     {
         $VersionNum = GetVersionNumber($version)
-        $path = [io.path]::Combine(${env:ProgramFiles(x86)}, ("Microsoft Visual Studio " + $VersionNum), "vc", "vcvarsall.bat")
+        $VSpath = [io.path]::Combine(${env:ProgramFiles(x86)}, ("Microsoft Visual Studio " + $VersionNum), "vc", "vcvarsall.bat")
     }
 
-    if(!(Test-Path $path))
+    if(!(Test-Path $VSpath))
     {
-        Throw "Can't locate Visual Studio " + $version
+        Throw "Can't locate Visual Studio " + $version + " in " + $VSpath
     }
-    $path
+    $VSpath
 }
 
 function GetBatchCommand($version, $platform)
 {
-    $path = GetVSPath $version
-    $cmd = ('"' + $path + '"')
+    $VSpath = GetVSPath $version
+    $cmd = ('"' + $VSpath + '"')
     if($platform -eq "x64")
     {
         $cmd = $cmd + " x64"
@@ -130,7 +138,7 @@ function CallBatch($cmd)
 {
     # Calls the batch file and copies the environment, as explained here: http://stackoverflow.com/a/2124759/871910
     cmd /c ("$cmd" + "&set") |
-    foreach {
+    ForEach-Object {
         if ($_ -match "=") {
             $v = $_.split("="); set-item -force -path "ENV:\$($v[0])"  -value "$($v[1])"
         }
@@ -140,7 +148,7 @@ function CallBatch($cmd)
 function GetCLVersion
 {
     $cl = (Get-Command cl).Source
-    if($cl.Contains("amd64"))
+    if($cl.Contains("amd64") -or $cl.Contains("x64"))
     {
         $platform = "x64"
     }
