@@ -27,6 +27,7 @@ function Enable-Virtenv($dir = "env")
     . $cmd
 
     # The Virtualenv's Powershell prompt is rather useless, so we just restore the previous prompt function.
+    # Note - with version 3.8 of Python, the prompt is OK, but we still disable it.
     set-content function:\prompt $function:old_prompt
 }
 
@@ -51,7 +52,14 @@ function Write-VirtenvPrompt($color = "cyan")
 
     function get-prompt($activate_path)
     {
-        $match = (Select-String -Path $activate_path -Pattern 'set "PROMPT=(.*)%PROMPT%"')
+        $match = (Select-String -Path $activate_path -Pattern 'set "PROMPT=(.*)\s?%PROMPT%"')
+        $match = (Select-String -Path $activate_path -Pattern 'set "PROMPT=(.*)\s%PROMPT%"')
+        if(! $match )
+        {
+            # Python 3.8 uses a different batch file
+            $match = (Select-String -Path $activate_path -Pattern 'set PROMPT=(.*)\s%PROMPT%')
+        }
+
         if(! $match )
         {
             $prompt = "(UnknownEnv)"
