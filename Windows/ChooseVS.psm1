@@ -8,7 +8,7 @@
   
 
  .Parameter $version
- Visual Studio version. Can be 2010, 2012, 2013 or 2015.
+ Visual Studio version. Can be 2010, 2012, 2013, 2015, 2017 or 2019
 
  .Parameter $platform
  Can be x86 or x64. Default is x64
@@ -28,7 +28,7 @@ function ChooseVS
     Param(
         [Parameter(Mandatory=$true,
                    HelpMessage="Choose Visual Studio version")]
-        [ValidateSet("2010", "2012", "2013", "2015", "2017")]
+        [ValidateSet("2010", "2012", "2013", "2015", "2017", "2019")]
         [String]
         $version,
 
@@ -44,6 +44,8 @@ function ChooseVS
     Write-Host ("Visual Studio " + $version + " " + $platform + " set")
 }
 
+# Version numbers prior to VS 2017 had to be mapped. Starting with 2017
+# this is no longer necessary.
 function GetVersionNumber($version)
 {
     $versions = @{
@@ -51,7 +53,6 @@ function GetVersionNumber($version)
         "2012"= "11.0";
         "2013"= "12.0";
         "2015"= "14.0";
-		"2017"= "15.0";
     }
 
     $versions.Get_Item($version)
@@ -64,7 +65,6 @@ function GetVersion($VersionNumber)
         "11.0" = "2012";
         "12.0" = "2013";
         "14.0" = "2015";
-		"15.0" = "2017";
     }
 
     $DecodedVersion = $VersionNumbers.Get_Item($VersionNumber)
