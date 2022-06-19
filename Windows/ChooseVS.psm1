@@ -28,7 +28,7 @@ function ChooseVS
     Param(
         [Parameter(Mandatory=$true,
                    HelpMessage="Choose Visual Studio version")]
-        [ValidateSet("2010", "2012", "2013", "2015", "2017", "2019")]
+        [ValidateSet("2010", "2012", "2013", "2015", "2017", "2019", "2022")]
         [String]
         $version,
 
@@ -96,7 +96,15 @@ function GetVSEditionPath($VSpath)
 
 function GetVSPath($version)
 {
-    if($version -ge 2017)
+    if($version -ge 2022)
+    {
+        # Located here: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat"
+        # 'Community' may be 'Professional' or 'Enterprise', depending on the edition.
+        $VSpath = [io.path]::Combine(${env:ProgramFiles}, "Microsoft Visual Studio", $version)
+        $VSpath = GetVSEditionPath($VSpath)  # Adds the edition
+        $VSpath = [io.path]::Combine($VSpath, "Auxiliary", "Build", "vcvarsall.bat")
+    }
+    elseif($version -ge 2017)
     {
         # Located here: "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat"
         # 'Community' may be 'Professional' or 'Enterprise', depending on the edition.
